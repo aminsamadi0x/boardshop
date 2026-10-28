@@ -1,0 +1,198 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}تعمیر برد، مادربرد، لپ‌تاپ و موبایل | فروش قطعات الکترونیکی{% endblock %}
+{% block description %}تعمیر تخصصی برد الکترونیکی، مادربرد، لپ‌تاپ و موبایل با ضمانت کیفیت و فروش قطعات اصلی. استعلام قیمت و ثبت سفارش آنلاین.{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        padding: 56px 48px; margin-bottom: 24px;
+        background: var(--hero-bg);
+        border-right: 3px solid var(--color-gold);
+    }
+    .hero h1 { font-size: 2.4rem; font-weight: 800; line-height: 1.4; max-width: 560px; margin-bottom: 14px; }
+    .hero p { color: var(--color-text-secondary); font-size: 1.05rem; max-width: 520px; margin-bottom: 28px; }
+
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); margin-bottom: 40px; }
+    .stat { padding: 22px 16px; text-align: center; }
+    .stat + .stat { border-right: 1px solid var(--color-border); }
+    .stat-number { font-size: 28px; font-weight: 800; color: var(--color-gold); line-height: 1.3; }
+    .stat-label { font-size: 13px; color: var(--color-text-muted); }
+
+    .block-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--color-border); position: relative; }
+    .block-head::after { content: ''; position: absolute; bottom: -1px; right: 0; width: 64px; height: 2px; background: var(--gradient-gold); }
+    .block-head h2 { font-size: 21px; font-weight: 800; margin: 0; }
+
+    .item-card { display: block; height: 100%; color: var(--color-text); transition: border-color .2s, transform .2s; }
+    .item-card:hover { color: var(--color-text); border-color: rgba(var(--accent-rgb), .5); transform: translateY(-3px); }
+    .item-thumb { aspect-ratio: 4 / 3; background: var(--color-bg-section); display: flex; align-items: center; justify-content: center; position: relative; }
+    .item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .item-thumb i { font-size: 34px; color: var(--color-text-muted); }
+    .item-tag { position: absolute; top: 10px; right: 10px; padding: 2px 12px; border-radius: 99rem; background: var(--gradient-gold); color: var(--on-accent); font-size: 11px; font-weight: 800; }
+    .item-body { padding: 14px 16px 16px; }
+    .item-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .item-meta { font-size: 12px; color: var(--color-text-muted); }
+    .item-price { font-size: 16px; font-weight: 800; color: var(--color-gold); }
+    .item-price small { font-size: 11px; font-weight: 400; color: var(--color-text-muted); }
+
+    .tile { display: flex; align-items: center; gap: 14px; padding: 18px; height: 100%; color: var(--color-text); transition: border-color .2s; }
+    .tile:hover { color: var(--color-text); border-color: rgba(var(--accent-rgb), .5); }
+    .tile-icon { width: 52px; height: 52px; flex-shrink: 0; border-radius: var(--radius-sm); background: var(--color-gold-glass); color: var(--color-gold); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .tile-icon img { width: 30px; height: 30px; object-fit: contain; }
+    .tile-name { font-size: 15px; font-weight: 700; }
+    .tile-meta { font-size: 12px; color: var(--color-text-muted); }
+
+    .sell-banner { padding: 32px 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; border-right: 3px solid var(--color-gold); }
+    .sell-banner h4 { font-weight: 800; font-size: 20px; margin-bottom: 4px; }
+    .sell-banner p { margin: 0; color: var(--color-text-secondary); }
+
+    @media (max-width: 768px) {
+        .hero { padding: 32px 22px; }
+        .hero h1 { font-size: 1.7rem; }
+        .stats { grid-template-columns: repeat(2, 1fr); }
+        .stat:nth-child(3) { border-right: none; }
+        .stat:nth-child(n+3) { border-top: 1px solid var(--color-border); }
+        .sell-banner { padding: 24px 20px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ====== هدر اصلی ====== -->
+<section class="hero card-custom">
+    <h1>تعمیر تخصصی برد، مادربرد، لپ‌تاپ و موبایل و فروش قطعات الکترونیکی</h1>
+    <p>بیش از ۱۰ سال تجربه در تعمیر مادربرد، لپ‌تاپ و موبایل و فروش قطعات اصلی.</p>
+    <div class="d-flex gap-3 flex-wrap">
+        <a href="{% url 'shop:category_list' %}" class="btn-gold"><i class="fas fa-table-cells-large"></i> مشاهده محصولات</a>
+        <a href="{% url 'shop:repair_services' %}" class="btn-blue"><i class="fas fa-screwdriver-wrench"></i> خدمات تعمیرات</a>
+    </div>
+</section>
+
+<!-- ====== آمار ====== -->
+<section class="stats card-custom">
+    <div class="stat"><div class="stat-number" data-count="1520">0</div><div class="stat-label">قطعه موجود</div></div>
+    <div class="stat"><div class="stat-number" data-count="3840">0</div><div class="stat-label">تعمیر موفق</div></div>
+    <div class="stat"><div class="stat-number" data-count="1250">0</div><div class="stat-label">مشتری راضی</div></div>
+    <div class="stat"><div class="stat-number" data-count="4.9">0</div><div class="stat-label">امتیاز کاربران</div></div>
+</section>
+
+<!-- ====== محصولات جدید ====== -->
+{% if products %}
+<section class="mb-5">
+    <div class="block-head">
+        <h2>جدیدترین محصولات</h2>
+        <a href="{% url 'shop:category_list' %}" class="btn-outline-gold">مشاهده همه</a>
+    </div>
+    <div class="row g-3">
+        {% for product in products|slice:":8" %}
+        <div class="col-6 col-md-3">
+            <a href="{% url 'shop:product_detail' product.id %}" class="item-card card-custom">
+                <div class="item-thumb">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }} - {{ product.category.name }}" width="400" height="300" loading="lazy" decoding="async">
+                    {% else %}
+                        <i class="fas fa-microchip"></i>
+                    {% endif %}
+                    {% if product.is_new %}<span class="item-tag">جدید</span>{% endif %}
+                </div>
+                <div class="item-body">
+                    <div class="item-name">{{ product.name|truncatechars:28 }}</div>
+                    <div class="item-price">{{ product.price|floatformat:0|intcomma }} <small>تومان</small></div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- ====== دسته‌بندی‌ها ====== -->
+{% if categories %}
+<section class="mb-5">
+    <div class="block-head">
+        <h2>دسته‌بندی‌ها</h2>
+        <a href="{% url 'shop:category_list' %}" class="btn-outline-gold">مشاهده همه</a>
+    </div>
+    <div class="row g-3">
+        {% for category in categories|slice:":8" %}
+        <div class="col-6 col-md-3">
+            <a href="{{ category.get_absolute_url }}" class="tile card-custom">
+                <div class="tile-icon">
+                    {% if category.image %}<img src="{{ category.image.url }}" alt="{{ category.name }}">{% else %}<i class="fas fa-folder"></i>{% endif %}
+                </div>
+                <div>
+                    <div class="tile-name">{{ category.name|truncatechars:16 }}</div>
+                    <div class="tile-meta">{{ category.products.count }} محصول</div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- ====== خدمات تعمیرات ====== -->
+{% if services %}
+<section class="mb-5">
+    <div class="block-head">
+        <h2>خدمات تخصصی</h2>
+        <a href="{% url 'shop:repair_services' %}" class="btn-outline-gold">مشاهده همه</a>
+    </div>
+    <div class="row g-3">
+        {% for service in services|slice:":4" %}
+        <div class="col-6 col-md-3">
+            <a href="{% url 'shop:service_detail' service.id %}" class="item-card card-custom">
+                <div class="item-body" style="padding:20px;">
+                    <div class="tile-icon mb-3">
+                        {% if service.image %}<img src="{{ service.image.url }}" alt="{{ service.name }}">{% else %}<i class="fas fa-screwdriver-wrench"></i>{% endif %}
+                    </div>
+                    <div class="item-name">{{ service.name|truncatechars:22 }}</div>
+                    <div class="item-meta mb-2">{{ service.get_service_type_display }}</div>
+                    <div class="item-price">{{ service.price|floatformat:0|intcomma }} <small>تومان</small></div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- ====== فروش به فروشگاه ====== -->
+<section>
+    <div class="sell-banner card-custom">
+        <div>
+            <h4>محصول خود را به ما بفروشید</h4>
+            <p>محصول را ثبت کنید، قیمت را بررسی و با هم توافق می‌کنیم.</p>
+        </div>
+        <a href="{% url 'shop:user_sell_product' %}" class="btn-gold"><i class="fas fa-plus"></i> ثبت محصول</a>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const el = entry.target;
+                const target = parseFloat(el.dataset.count);
+                const isFloat = target % 1 !== 0;
+                const start = performance.now();
+                (function tick(now) {
+                    const p = Math.min((now - start) / 1600, 1);
+                    const v = p * target;
+                    el.textContent = isFloat ? v.toFixed(1) : Math.floor(v).toLocaleString('fa-IR');
+                    if (p < 1) requestAnimationFrame(tick);
+                })(start);
+                observer.unobserve(el);
+            });
+        }, { threshold: 0.4 });
+        document.querySelectorAll('.stat-number').forEach(el => observer.observe(el));
+    });
+</script>
+{% endblock %}

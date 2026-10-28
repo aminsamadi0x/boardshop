@@ -1,0 +1,122 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}مدیریت محصولات فروش کاربران - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h3 class="section-title">مدیریت محصولات فروش کاربران</h3>
+    
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-2 col-4">
+            <div class="card-custom p-3 text-center">
+                <span class="badge bg-warning fs-6">{{ stats.pending }}</span>
+                <p class="mb-0 small">در انتظار</p>
+            </div>
+        </div>
+        <div class="col-md-2 col-4">
+            <div class="card-custom p-3 text-center">
+                <span class="badge bg-info fs-6">{{ stats.reviewing }}</span>
+                <p class="mb-0 small">در بررسی</p>
+            </div>
+        </div>
+        <div class="col-md-2 col-4">
+            <div class="card-custom p-3 text-center">
+                <span class="badge bg-primary fs-6">{{ stats.priced }}</span>
+                <p class="mb-0 small">قیمت‌گذاری</p>
+            </div>
+        </div>
+        <div class="col-md-2 col-4">
+            <div class="card-custom p-3 text-center">
+                <span class="badge bg-warning fs-6">{{ stats.negotiating }}</span>
+                <p class="mb-0 small">مذاکره</p>
+            </div>
+        </div>
+        <div class="col-md-2 col-4">
+            <div class="card-custom p-3 text-center">
+                <span class="badge bg-success fs-6">{{ stats.approved }}</span>
+                <p class="mb-0 small">تایید</p>
+            </div>
+        </div>
+        <div class="col-md-2 col-4">
+            <div class="card-custom p-3 text-center">
+                <span class="badge bg-danger fs-6">{{ stats.rejected }}</span>
+                <p class="mb-0 small">رد</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="mb-3">
+        <div class="btn-group" role="group">
+            <a href="?status=" class="btn btn-outline-custom {% if not status_filter %}active{% endif %}">همه</a>
+            <a href="?status=pending" class="btn btn-outline-custom {% if status_filter == 'pending' %}active{% endif %}">در انتظار</a>
+            <a href="?status=reviewing" class="btn btn-outline-custom {% if status_filter == 'reviewing' %}active{% endif %}">در بررسی</a>
+            <a href="?status=priced" class="btn btn-outline-custom {% if status_filter == 'priced' %}active{% endif %}">قیمت‌گذاری</a>
+            <a href="?status=negotiating" class="btn btn-outline-custom {% if status_filter == 'negotiating' %}active{% endif %}">مذاکره</a>
+            <a href="?status=approved" class="btn btn-outline-custom {% if status_filter == 'approved' %}active{% endif %}">تایید</a>
+            <a href="?status=rejected" class="btn btn-outline-custom {% if status_filter == 'rejected' %}active{% endif %}">رد</a>
+            <a href="?status=purchased" class="btn btn-outline-custom {% if status_filter == 'purchased' %}active{% endif %}">خریداری</a>
+        </div>
+    </div>
+    
+    <!-- List -->
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>تصویر</th>
+                    <th>عنوان</th>
+                    <th>کاربر</th>
+                    <th>قیمت کاربر</th>
+                    <th>پیشنهاد ادمین</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sell in sells %}
+                    <tr>
+                        <td>
+                            {% if sell.image1 %}
+                                <img src="{{ sell.image1.url }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                            {% else %}
+                                <i class="fas fa-image fa-2x text-muted"></i>
+                            {% endif %}
+                        </td>
+                        <td class="fw-bold">{{ sell.title }}</td>
+                        <td>{{ sell.user.username }}</td>
+                        <td>{{ sell.user_price|floatformat:0 }}</td>
+                        <td>
+                            {% if sell.admin_price %}
+                                {{ sell.admin_price|floatformat:0 }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge {% if sell.status == 'pending' %}bg-warning{% elif sell.status == 'reviewing' %}bg-info{% elif sell.status == 'priced' %}bg-primary{% elif sell.status == 'negotiating' %}bg-warning{% elif sell.status == 'approved' %}bg-success{% elif sell.status == 'rejected' %}bg-danger{% elif sell.status == 'purchased' %}bg-success{% endif %}">
+                                {{ sell.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ sell.created_at|date:"Y/m/d" }}</td>
+                        <td>
+                            <a href="{% url 'shop:admin_sell_detail' sell.id %}" class="btn btn-primary-custom btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x text-muted"></i>
+                            <p class="mt-2">هیچ محصولی ثبت نشده است</p>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

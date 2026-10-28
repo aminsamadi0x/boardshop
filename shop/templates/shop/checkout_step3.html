@@ -1,0 +1,69 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}تکمیل سفارش - مرحله ۳ - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card-custom p-4">
+                <div class="d-flex justify-content-between mb-4">
+                    <h4 class="fw-bold">تکمیل سفارش</h4>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-success rounded-pill px-3 py-2">✓</span>
+                        <span class="badge bg-success rounded-pill px-3 py-2">✓</span>
+                        <span class="badge bg-primary rounded-pill px-3 py-2">۳</span>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>مبلغ قابل پرداخت: {{ final_amount|floatformat:0 }} تومان</strong>
+                </div>
+                
+                <div class="card-custom p-4 mb-4" style="background: var(--primary-blue-lightest); border: 2px dashed var(--primary-blue-light);">
+                    <h6 class="fw-bold">اطلاعات پرداخت</h6>
+                    <p class="mb-1">
+                        <i class="fas fa-credit-card me-2" style="color: var(--primary-blue-light);"></i>
+                        <strong>شماره کارت:</strong> {{ site_settings.card_number|default:"6037-9972-4418-1732" }}
+                    </p>
+                    <p class="mb-1">
+                        <i class="fas fa-user me-2" style="color: var(--primary-blue-light);"></i>
+                        <strong>به نام:</strong> {{ site_settings.card_holder_name|default:"مدیر فروشگاه" }}
+                    </p>
+                    <p class="mb-0">
+                        <i class="fas fa-university me-2" style="color: var(--primary-blue-light);"></i>
+                        <strong>بانک:</strong> {{ site_settings.bank_name|default:"بانک ملی" }}
+                    </p>
+                    {% if payment_method == 'shaba' %}
+                        <hr>
+                        <p class="mb-0">
+                            <i class="fas fa-exchange-alt me-2" style="color: var(--primary-blue-light);"></i>
+                            <strong>شماره شبا:</strong> {{ site_settings.shaba_number|default:"IR123456789012345678901234" }}
+                        </p>
+                    {% endif %}
+                </div>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">تصویر رسید پرداخت</label>
+                        {{ form.receipt_image }}
+                        <small class="text-muted">لطفاً تصویر رسید پرداخت را آپلود کنید</small>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success-custom">
+                            <i class="fas fa-check me-2"></i> ثبت سفارش
+                        </button>
+                        <a href="{% url 'shop:checkout_cancel' %}" class="btn btn-danger-custom">
+                            <i class="fas fa-times me-2"></i> لغو
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

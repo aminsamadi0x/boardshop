@@ -1,0 +1,43 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}خدمات تعمیرات - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="section-title">خدمات تعمیرات</h3>
+    
+    <div class="row g-4">
+        {% for service in services %}
+            <div class="col-md-6 col-lg-4">
+                <a href="{% url 'shop:service_detail' service.id %}" class="text-decoration-none">
+                    <div class="card-custom h-100">
+                        {% if service.image %}
+                            <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-tools fa-4x" style="color: var(--primary-blue-light);"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">{{ service.name }}</h5>
+                            <p class="text-muted small">{{ service.get_service_type_display }}</p>
+                            <p class="card-text">{{ service.description|truncatechars:100 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-primary" style="color: var(--primary-blue) !important;">
+                                    {{ service.price|floatformat:0 }} تومان
+                                </span>
+                                <span class="badge bg-success">فعال</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-tools fa-4x text-muted"></i>
+                <p class="mt-3">خدمتی ثبت نشده است</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

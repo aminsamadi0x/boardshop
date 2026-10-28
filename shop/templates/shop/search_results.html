@@ -1,0 +1,72 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}نتایج جستجو - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="section-title">نتایج جستجو برای: "{{ query }}"</h3>
+    
+    <!-- Products -->
+    {% if products %}
+        <h5 class="mt-4 fw-bold">محصولات</h5>
+        <div class="row g-4">
+            {% for product in products %}
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="card-custom h-100">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 150px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                <i class="fas fa-microchip fa-2x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h6 class="card-title fw-bold text-truncate">{{ product.name }}</h6>
+                            <span class="fw-bold text-primary" style="color: var(--primary-blue) !important;">{{ product.price|floatformat:0 }} تومان</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <!-- Components -->
+    {% if components %}
+        <h5 class="mt-4 fw-bold">قطعات</h5>
+        <div class="row g-4">
+            {% for component in components %}
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="{% url 'shop:component_detail' component.id %}" class="text-decoration-none">
+                        <div class="card-custom text-center p-3 h-100">
+                            <i class="fas fa-microchip fa-3x" style="color: var(--primary-blue-light);"></i>
+                            <p class="mt-2 fw-bold">{{ component.name }}</p>
+                            <span class="badge bg-light text-muted">{{ component.get_component_type_display }}</span>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <!-- Services -->
+    {% if services %}
+        <h5 class="mt-4 fw-bold">خدمات تعمیرات</h5>
+        <div class="row g-4">
+            {% for service in services %}
+                <div class="col-md-6 col-lg-4">
+                    <a href="{% url 'shop:service_detail' service.id %}" class="text-decoration-none">
+                        <div class="card-custom p-3 h-100">
+                            <h6 class="fw-bold">{{ service.name }}</h6>
+                            <p class="text-muted small">{{ service.get_service_type_display }}</p>
+                            <span class="fw-bold text-primary" style="color: var(--primary-blue) !important;">{{ service.price|floatformat:0 }} تومان</span>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {% if not products and not components and not services %}
+        <div class="text-center py-5">
+            <i class="fas fa-search fa-4x text-muted"></i>
+            <p class="mt

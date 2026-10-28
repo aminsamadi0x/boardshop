@@ -1,0 +1,87 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}پروفایل - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="section-title">پروفایل کاربری</h3>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card-custom p-4 text-center">
+                <i class="fas fa-user-circle fa-5x" style="color: var(--primary-blue-light);"></i>
+                <h5 class="mt-2 fw-bold">{{ user.get_full_name|default:user.username }}</h5>
+                <p class="text-muted">{{ user.username }}</p>
+                <p class="text-muted small">{{ user.email }}</p>
+                <hr>
+                <p><i class="fas fa-gift me-2" style="color: var(--primary-blue-light);"></i> کد معرف: <span class="fw-bold">{{ profile.referral_code }}</span></p>
+                <p><i class="fas fa-coins me-2" style="color: var(--primary-blue-light);"></i> اعتبار: <span class="fw-bold">{{ profile.credits|floatformat:0 }} تومان</span></p>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card-custom p-4">
+                <h5 class="fw-bold">ویرایش اطلاعات</h5>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">نام و نام خانوادگی</label>
+                        <input type="text" name="full_name" class="form-control rounded-pill" value="{{ profile.full_name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">شماره تماس</label>
+                        <input type="text" name="phone" class="form-control rounded-pill" value="{{ profile.phone }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">آدرس</label>
+                        <textarea name="address" class="form-control" rows="3">{{ profile.address }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">کد پستی</label>
+                        <input type="text" name="postal_code" class="form-control rounded-pill" value="{{ profile.postal_code }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom">
+                        <i class="fas fa-save me-2"></i> ذخیره تغییرات
+                    </button>
+                </form>
+            </div>
+            
+            <div class="card-custom p-4 mt-4">
+                <h5 class="fw-bold">کدهای تخفیف</h5>
+                {% if discount_codes %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>کد</th>
+                                    <th>مقدار</th>
+                                    <th>وضعیت</th>
+                                    <th>انقضا</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for code in discount_codes %}
+                                    <tr>
+                                        <td class="fw-bold">{{ code.code }}</td>
+                                        <td>{{ code.amount }}{% if code.discount_type == 'percentage' %}%{% else %} تومان{% endif %}</td>
+                                        <td>
+                                            {% if code.is_used %}
+                                                <span class="badge bg-secondary">استفاده شده</span>
+                                            {% else %}
+                                                <span class="badge bg-success">فعال</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ code.expires_at|date:"Y/m/d" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">کد تخفیفی ندارید</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

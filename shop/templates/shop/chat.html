@@ -1,0 +1,71 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}پشتیبانی - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="section-title">پشتیبانی</h3>
+    
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card-custom p-4">
+                <div class="chat-box" style="max-height: 400px; overflow-y: auto;" id="chatMessages">
+                    {% for msg in chat_messages %}
+                        <div class="d-flex mb-3 {% if msg.is_admin %}justify-content-start{% else %}justify-content-end{% endif %}">
+                            <div class="p-3 rounded-3 {% if msg.is_admin %}bg-light{% else %}" style="background: var(--primary-blue-lightest);{% endif %}" style="max-width: 80%;">
+                                {% if msg.message %}
+                                    <p class="mb-0">{{ msg.message }}</p>
+                                {% endif %}
+                                {% if msg.image %}
+                                    <img src="{{ msg.image.url }}" class="img-fluid rounded mt-2" style="max-width: 200px;">
+                                {% endif %}
+                                {% if msg.video %}
+                                    <video src="{{ msg.video.url }}" controls class="mt-2" style="max-width: 200px; border-radius: 8px;"></video>
+                                {% endif %}
+                                <small class="text-muted d-block mt-1">{{ msg.created_at|date:"H:i" }}</small>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-comment-dots fa-3x"></i>
+                            <p class="mt-2">هنوز پیامی ارسال نشده است</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <hr>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        {{ form.message }}
+                    </div>
+                    
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            {{ form.image }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.video }}
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary-custom w-100">
+                                <i class="fas fa-paper-plane me-2"></i> ارسال
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Auto scroll to bottom
+    const chatBox = document.getElementById('chatMessages');
+    chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+{% endblock %}
+{% endblock %}

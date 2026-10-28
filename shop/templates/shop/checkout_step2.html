@@ -1,0 +1,87 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}تکمیل سفارش - مرحله ۲ - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card-custom p-4">
+                <div class="d-flex justify-content-between mb-4">
+                    <h4 class="fw-bold">تکمیل سفارش</h4>
+                    <div class="d-flex gap-2">
+                        <span class="badge bg-success rounded-pill px-3 py-2">✓</span>
+                        <span class="badge bg-primary rounded-pill px-3 py-2">۲</span>
+                        <span class="badge bg-light text-muted rounded-pill px-3 py-2">۳</span>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <span>مبلغ قابل پرداخت: <strong>{{ final_amount|floatformat:0 }} تومان</strong></span>
+                    {% if discount_amount > 0 %}
+                        <br><small>تخفیف اعمال شده: {{ discount_amount|floatformat:0 }} تومان</small>
+                    {% endif %}
+                </div>
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">کد تخفیف (اختیاری)</label>
+                        <div class="input-group">
+                            {{ form.discount_code }}
+                            <button type="button" class="btn btn-outline-custom" id="applyDiscount">
+                                اعمال
+                            </button>
+                        </div>
+                        <div id="discountResult" class="mt-2"></div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary-custom">
+                            <i class="fas fa-arrow-left me-2"></i> مرحله بعد
+                        </button>
+                        <a href="{% url 'shop:checkout_cancel' %}" class="btn btn-danger-custom">
+                            <i class="fas fa-times me-2"></i> لغو
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('applyDiscount').addEventListener('click', function() {
+        const code = document.querySelector('[name="discount_code"]').value;
+        if (!code) {
+            document.getElementById('discountResult').innerHTML = 
+                '<div class="alert alert-warning">لطفاً کد تخفیف را وارد کنید</div>';
+            return;
+        }
+        
+        fetch('{% url "shop:validate_discount" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({code: code})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.valid) {
+                document.getElementById('discountResult').innerHTML = 
+                    '<div class="alert alert-success">کد تخفیف معتبر است!</div>';
+                document.querySelector('button[type="submit"]').click();
+            } else {
+                document.getElementById('discountResult').innerHTML = 
+                    '<div class="alert alert-danger">' + data.message + '</div>';
+            }
+        });
+    });
+</script>
+{% endblock %}

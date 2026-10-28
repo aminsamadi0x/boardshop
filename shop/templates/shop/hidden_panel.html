@@ -1,0 +1,52 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}پنل مخفی{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card-custom p-4 text-center">
+        <i class="fas fa-crown fa-5x" style="color: var(--primary-blue-light);"></i>
+        <h3 class="mt-3 fw-bold">پنل مخفی</h3>
+        <p class="text-muted">تنها برای مدیران سیستم</p>
+        
+        <hr>
+        
+        <div class="row g-4 mt-3">
+            <div class="col-md-6">
+                <div class="card-custom p-4">
+                    <h5 class="fw-bold">وضعیت پنل ادمین</h5>
+                    {% if is_locked %}
+                        <span class="badge bg-danger p-2">🔒 قفل شده</span>
+                    {% else %}
+                        <span class="badge bg-success p-2">🔓 باز است</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card-custom p-4">
+                    <h5 class="fw-bold">عملیات</h5>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {% if is_locked %}
+                            <button type="submit" name="action" value="unlock_admin" class="btn btn-success-custom w-100">
+                                <i class="fas fa-unlock me-2"></i> باز کردن قفل
+                            </button>
+                        {% else %}
+                            <button type="submit" name="action" value="lock_admin" class="btn btn-danger-custom w-100">
+                                <i class="fas fa-lock me-2"></i> قفل کردن پنل
+                            </button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <p class="text-muted small">کلید مخفی: <code>{{ secret_key }}</code></p>
+            <a href="{% url 'shop:home' %}" class="btn btn-outline-custom">
+                <i class="fas fa-home me-2"></i> بازگشت
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

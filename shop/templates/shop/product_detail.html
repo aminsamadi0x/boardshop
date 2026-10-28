@@ -1,0 +1,92 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}{{ product.name }} - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">خانه</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'shop:category_detail' product.category.slug %}">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row g-4">
+        <div class="col-md-5">
+            <div class="card-custom p-3">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded" style="width: 100%;">
+                {% else %}
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 400px;">
+                        <i class="fas fa-microchip fa-5x text-muted"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-7">
+            <h3 class="fw-bold">{{ product.name }}</h3>
+            <p class="text-muted">{{ product.category.name }}</p>
+            
+            <div class="my-3">
+                <span class="h4 fw-bold text-primary" style="color: var(--primary-blue) !important;">{{ product.price|floatformat:0 }} تومان</span>
+                {% if product.is_new %}
+                    <span class="badge bg-success ms-2">جدید</span>
+                {% endif %}
+                {% if product.is_available %}
+                    <span class="badge bg-success">موجود</span>
+                {% else %}
+                    <span class="badge bg-danger">ناموجود</span>
+                {% endif %}
+            </div>
+            
+            <p class="text-muted">{{ product.description|linebreaks }}</p>
+            
+            {% if product.is_available %}
+                <form action="{% url 'shop:add_to_cart' product.id %}" method="POST" class="row g-2 align-items-center">
+                    {% csrf_token %}
+                    <div class="col-auto">
+                        <label class="fw-bold">تعداد:</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 80px;">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary-custom px-4">
+                            <i class="fas fa-cart-plus me-2"></i> افزودن به سبد خرید
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if related_products %}
+        <div class="mt-5">
+            <h4 class="section-title">محصولات مشابه</h4>
+            <div class="row g-4">
+                {% for product in related_products %}
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="card-custom h-100">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 150px; object-fit: cover;">
+                            {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                    <i class="fas fa-microchip fa-2x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h6 class="card-title fw-bold text-truncate">{{ product.name }}</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-primary" style="color: var(--primary-blue) !important;">{{ product.price|floatformat:0 }} تومان</span>
+                                    <a href="{% url 'shop:product_detail' product.id %}" class="btn btn-outline-custom btn-sm">مشاهده</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}{{ service.name }} - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">خانه</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'shop:repair_services' %}">خدمات</a></li>
+            <li class="breadcrumb-item active">{{ service.name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row g-4">
+        <div class="col-md-5">
+            <div class="card-custom p-3">
+                {% if service.image %}
+                    <img src="{{ service.image.url }}" alt="{{ service.name }}" class="img-fluid rounded" style="width: 100%;">
+                {% else %}
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 350px;">
+                        <i class="fas fa-tools fa-5x" style="color: var(--primary-blue-light);"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-7">
+            <h3 class="fw-bold">{{ service.name }}</h3>
+            <p class="text-muted">{{ service.get_service_type_display }}</p>
+            
+            <div class="my-3">
+                <span class="h4 fw-bold text-primary" style="color: var(--primary-blue) !important;">{{ service.price|floatformat:0 }} تومان</span>
+                <span class="badge bg-success ms-2">فعال</span>
+            </div>
+            
+            <h6 class="fw-bold">توضیحات</h6>
+            <p class="text-muted">{{ service.description|linebreaks }}</p>
+            
+            <a href="{% url 'shop:chat' %}" class="btn btn-primary-custom">
+                <i class="fas fa-headset me-2"></i> مشاوره رایگان
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,274 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}جزئیات محصول فروش - {{ site_settings.site_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">خانه</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'shop:admin_sell_list' %}">محصولات فروش</a></li>
+            <li class="breadcrumb-item active">{{ sell.title }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row g-4">
+        <!-- Product Info -->
+        <div class="col-lg-7">
+            <div class="card-custom p-4">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h4 class="fw-bold">{{ sell.title }}</h4>
+                    <span class="badge {% if sell.status == 'pending' %}bg-warning{% elif sell.status == 'reviewing' %}bg-info{% elif sell.status == 'priced' %}bg-primary{% elif sell.status == 'negotiating' %}bg-warning{% elif sell.status == 'admin_approved' %}bg-success{% elif sell.status == 'user_approved' %}bg-success{% elif sell.status == 'completed' %}bg-success{% elif sell.status == 'rejected' %}bg-danger{% elif sell.status == 'cancelled' %}bg-secondary{% endif %} fs-6 px-3 py-2">
+                        {{ sell.get_status_display }}
+                    </span>
+                </div>
+                
+                <!-- Images -->
+                <div class="row g-3 mt-2">
+                    {% if sell.image1 %}
+                        <div class="col-12">
+                            <img src="{{ sell.image1.url }}" class="img-fluid rounded" alt="{{ sell.title }}" style="width: 100%; max-height: 400px; object-fit: contain;">
+                        </div>
+                    {% endif %}
+                    
+                    {% if sell.image2 or sell.image3 %}
+                        <div class="col-6">
+                            {% if sell.image2 %}
+                                <img src="{{ sell.image2.url }}" class="img-fluid rounded" style="max-height: 150px; width: 100%; object-fit: cover;">
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            {% if sell.image3 %}
+                                <img src="{{ sell.image3.url }}" class="img-fluid rounded" style="max-height: 150px; width: 100%; object-fit: cover;">
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    {% if sell.video %}
+                        <div class="col-12">
+                            <video controls class="w-100 rounded" style="max-height: 300px;">
+                                <source src="{{ sell.video.url }}" type="video/mp4">
+                            </video>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <hr>
+                
+                <h6 class="fw-bold">توضیحات</h6>
+                <p class="text-muted">{{ sell.description|linebreaks }}</p>
+                
+                <div class="row g-3 mt-2">
+                    <div class="col-md-3">
+                        <small class="text-muted">کاربر</small>
+                        <p class="fw-bold">{{ sell.user.username }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">برند</small>
+                        <p class="fw-bold">{{ sell.brand|default:'-' }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">مدل</small>
+                        <p class="fw-bold">{{ sell.model|default:'-' }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">سال</small>
+                        <p class="fw-bold">{{ sell.year|default:'-' }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">وضعیت</small>
+                        <p class="fw-bold">{{ sell.condition|default:'-' }}</p>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted">تعداد</small>
+                        <p class="fw-bold">{{ sell.quantity }}</p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Prices -->
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <small class="text-muted">قیمت کاربر</small>
+                        <p class="h5 fw-bold" style="color: #e67e22;">
+                            {{ sell.user_price|floatformat:0 }} تومان
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">پیشنهاد ادمین</small>
+                        <p class="h5 fw-bold text-primary" style="color: var(--primary-blue) !important;">
+                            {{ sell.admin_price|floatformat:0|default:'-' }} تومان
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">قیمت نهایی</small>
+                        <p class="h5 fw-bold text-success">
+                            {{ sell.final_price|floatformat:0|default:'-' }} تومان
+                        </p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- اطلاعات پرداخت کاربر -->
+                {% if sell.card_number %}
+                    <h6 class="fw-bold">اطلاعات پرداخت کاربر</h6>
+                    <div class="row small">
+                        <div class="col-md-6"><strong>شماره کارت:</strong> {{ sell.card_number }}</div>
+                        <div class="col-md-6"><strong>نام صاحب کارت:</strong> {{ sell.card_holder_name }}</div>
+                        <div class="col-md-6"><strong>شماره شبا:</strong> {{ sell.shaba_number|default:'ثبت نشده' }}</div>
+                        <div class="col-md-6"><strong>نام بانک:</strong> {{ sell.bank_name|default:'ثبت نشده' }}</div>
+                    </div>
+                    <hr>
+                {% endif %}
+                
+                <!-- کد رهگیری کاربر -->
+                {% if sell.tracking_code %}
+                    <h6 class="fw-bold text-success">✅ کد رهگیری کاربر</h6>
+                    <p class="fw-bold">{{ sell.tracking_code }}</p>
+                    {% if sell.shipping_date %}
+                        <small class="text-muted">تاریخ ارسال: {{ sell.shipping_date|date:"Y/m/d H:i" }}</small>
+                    {% endif %}
+                    <hr>
+                {% endif %}
+                
+                <!-- Admin Actions -->
+                <h6 class="fw-bold">عملیات مدیریت</h6>
+                
+                <!-- Change Status -->
+                <form method="POST" class="mt-3">
+                    {% csrf_token %}
+                    <div class="row g-2">
+                        <div class="col-md-5">
+                            <select name="status" class="form-control rounded-pill">
+                                {% for value, label in sell.STATUS_CHOICES %}
+                                    <option value="{{ value }}" {% if sell.status == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" name="action" value="update_status" class="btn btn-primary-custom w-100">
+                                <i class="fas fa-sync me-2"></i> تغییر وضعیت
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Set Admin Price -->
+                <form method="POST" class="mt-3">
+                    {% csrf_token %}
+                    <div class="row g-2">
+                        <div class="col-md-5">
+                            <label class="form-label small">قیمت پیشنهادی ادمین</label>
+                            {{ admin_price_form.admin_price }}
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" name="action" value="set_admin_price" class="btn btn-warning w-100 mt-4">
+                                <i class="fas fa-gavel me-2"></i> ثبت پیشنهاد
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Set Final Price -->
+                <form method="POST" class="mt-3">
+                    {% csrf_token %}
+                    <div class="row g-2">
+                        <div class="col-md-5">
+                            <label class="form-label small">قیمت نهایی توافقی</label>
+                            {{ final_price_form.final_price }}
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" name="action" value="set_final_price" class="btn btn-success-custom w-100 mt-4">
+                                <i class="fas fa-check me-2"></i> تایید نهایی
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                
+                <!-- Upload Payment Receipt -->
+                {% if sell.status == 'user_approved' %}
+                    <form method="POST" enctype="multipart/form-data" class="mt-3">
+                        {% csrf_token %}
+                        <h6 class="fw-bold mt-3">آپلود رسید پرداخت</h6>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                {{ receipt_form.payment_receipt }}
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" name="action" value="upload_receipt" class="btn btn-gold w-100 mt-2">
+                                    <i class="fas fa-upload me-2"></i> آپلود رسید
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Chat -->
+        <div class="col-lg-5">
+            <div class="card-custom p-4" style="height: 100%;">
+                <h6 class="fw-bold">
+                    <i class="fas fa-comment-dots me-2" style="color: var(--gold);"></i>
+                    گفتگو با {{ sell.user.username }}
+                </h6>
+                <hr>
+                
+                <div style="max-height: 400px; overflow-y: auto;" id="chatMessages">
+                    {% for msg in negotiations %}
+                        <div class="mb-2 {% if msg.is_admin %}text-start{% else %}text-end{% endif %}">
+                            <div class="d-inline-block p-2 rounded-3 {% if msg.is_admin %}bg-light{% else %}" style="background: var(--primary-lightest);{% endif %}" style="max-width: 90%;">
+                                <div class="small fw-bold">
+                                    {% if msg.is_admin %}
+                                        <i class="fas fa-user-shield me-1" style="color: var(--gold);"></i> شما (ادمین)
+                                    {% else %}
+                                        <i class="fas fa-user me-1"></i> {{ sell.user.username }}
+                                    {% endif %}
+                                </div>
+                                <p class="mb-0">{{ msg.message }}</p>
+                                <div class="small text-muted">{{ msg.created_at|date:"H:i" }}</div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-comment fa-3x"></i>
+                            <p class="mt-2">هنوز پیامی ارسال نشده است</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <hr>
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-2">
+                        {{ chat_form.message }}
+                    </div>
+                    <button type="submit" name="action" value="send_message" class="btn btn-gold w-100">
+                        <i class="fas fa-paper-plane me-2"></i> ارسال پیام
+                    </button>
+                </form>
+                
+                <div class="mt-3">
+                    <a href="{% url 'shop:admin_sell_list' %}" class="btn btn-outline-custom w-100">
+                        <i class="fas fa-arrow-right me-2"></i> بازگشت به لیست
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    const chatMessages = document.getElementById('chatMessages');
+    if (chatMessages) {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+</script>
+{% endblock %}
+{% endblock %}
